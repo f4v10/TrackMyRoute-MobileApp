@@ -32,7 +32,7 @@ class MainActivity : ComponentActivity() {
             .create(RouteService::class.java)
 
         val dao = Room
-            .databaseBuilder(applicationContext, AppDatabase::class.java, "jokes-db")
+            .databaseBuilder(applicationContext, AppDatabase::class.java, "routes-db")
             .build()
             .getRouteDao()
 
@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TrackMyRouteMobileAppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                Scaffold(modifier = Modifier.fillMaxSize()) {
                     val routeViewModel = RouteViewModel(repository)
                     RouteScreen(routeViewModel)
                 }

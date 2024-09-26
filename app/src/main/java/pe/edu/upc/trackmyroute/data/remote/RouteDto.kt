@@ -4,8 +4,6 @@ import com.google.gson.annotations.SerializedName
 import pe.edu.upc.trackmyroute.domain.Route
 
 data class RouteResponseDto(
-    val response: String,
-    @SerializedName("results")
     val routes: List<RouteDto>?,
     val error: String?
 )
