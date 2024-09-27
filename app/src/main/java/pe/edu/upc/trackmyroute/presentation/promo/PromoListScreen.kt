@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -16,11 +17,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.skydoves.landscapist.glide.GlideImage
 import pe.edu.upc.trackmyroute.domain.Promo
+import coil.compose.AsyncImage
+import androidx.compose.ui.layout.ContentScale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PromoListScreen(viewModel: PromoListViewModel) {
-    val title = viewModel.title.value
     val state = viewModel.state.value
 
     Scaffold(
@@ -40,12 +42,6 @@ fun PromoListScreen(viewModel: PromoListViewModel) {
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            SearchBar(
-                title = title,
-                onTitleChanged = viewModel::onTitleChanged,
-                onSearch = viewModel::searchPromo
-            )
-
             when {
                 state.isLoading -> {
                     CircularProgressIndicator(modifier = Modifier.padding(16.dp))
@@ -57,7 +53,7 @@ fun PromoListScreen(viewModel: PromoListViewModel) {
                         modifier = Modifier.padding(16.dp)
                     )
                     Button(
-                        onClick = { viewModel.searchPromo() },
+                        onClick = { viewModel.getPromos() },
                         modifier = Modifier.padding(8.dp)
                     ) {
                         Text("Retry")
@@ -65,42 +61,19 @@ fun PromoListScreen(viewModel: PromoListViewModel) {
                 }
                 state.promos.isEmpty() -> {
                     Text(
-                        "No promotions found",
+                        "No se encontraron promociones",
                         modifier = Modifier.padding(16.dp)
                     )
                 }
                 else -> {
                     PromoList(
-                        promos = state.promos ?: emptyList(),
+                        promos = state.promos,
                         onToggleFavorite = viewModel::onToggleFavorite
                     )
                 }
             }
         }
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun SearchBar(
-    title: String,
-    onTitleChanged: (String) -> Unit,
-    onSearch: () -> Unit
-) {
-    OutlinedTextField(
-        value = title,
-        onValueChange = onTitleChanged,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        placeholder = { Text("Buscar promociones") },
-        trailingIcon = {
-            IconButton(onClick = onSearch) {
-                Icon(Icons.Default.Search, contentDescription = "Buscar")
-            }
-        },
-        singleLine = true
-    )
 }
 
 @Composable
@@ -113,7 +86,7 @@ fun PromoList(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        items(promos.sortedByDescending { it.isFavorite }) { promo ->
+        items(promos) { promo ->
             PromoItem(promo = promo, onToggleFavorite = { onToggleFavorite(promo) })
         }
     }
@@ -126,24 +99,13 @@ fun PromoItem(promo: Promo, onToggleFavorite: () -> Unit) {
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column {
-            GlideImage(
-                imageModel = { promo.imageUrl },
+            AsyncImage(
+                model = promo.imageUrl,
+                contentDescription = promo.title,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp),
-                loading = {
-                    Box(modifier = Modifier.matchParentSize()) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-                    }
-                },
-                failure = {
-                    Text(
-                        text = "Image not available",
-                        modifier = Modifier.padding(16.dp)
-                    )
-                }
+                contentScale = ContentScale.Crop
             )
             Column(modifier = Modifier.padding(16.dp)) {
                 Row(
@@ -153,21 +115,21 @@ fun PromoItem(promo: Promo, onToggleFavorite: () -> Unit) {
                 ) {
                     Text(
                         text = promo.title,
-                        fontSize = 18.sp,
+                        style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
                     IconButton(onClick = onToggleFavorite) {
                         Icon(
-                            imageVector = Icons.Default.Favorite,
-                            contentDescription = "Favorito",
-                            tint = if (promo.isFavorite) Color.Red else Color.Gray
+                            imageVector = if (promo.isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                            contentDescription = if (promo.isFavorite) "Remove from favorites" else "Add to favorites",
+                            tint = if (promo.isFavorite) Color.Red else MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = promo.description,
-                    fontSize = 14.sp
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
         }

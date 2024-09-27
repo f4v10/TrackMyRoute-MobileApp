@@ -5,5 +5,5 @@ data class Promo(
     val title: String,
     val description: String,
     val imageUrl: String,
-    var isFavorite: Boolean = false
+    var isFavorite: Boolean
 )

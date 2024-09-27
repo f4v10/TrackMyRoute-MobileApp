@@ -12,62 +12,41 @@ import java.io.IOException
 
 class PromoListViewModel(private val promoRepository: PromoRepository) : ViewModel() {
 
-    private val _title = mutableStateOf("")
-    val title: State<String> = _title
-
     private val _state = mutableStateOf(PromoListState())
     val state: State<PromoListState> = _state
 
     init {
-        searchPromo()
+        getPromos()
     }
 
-    fun onTitleChanged(title: String) {
-        _title.value = title
+    fun getPromos() {
+        _state.value = _state.value.copy(isLoading = true, error = "")
+        viewModelScope.launch {
+            when (val result = promoRepository.getPromos()) {
+                is Resource.Success -> {
+                    _state.value = PromoListState(promos = result.data ?: emptyList())
+                }
+                is Resource.Error -> {
+                    _state.value = PromoListState(error = result.message ?: "An unknown error occurred")
+                }
+            }
+        }
     }
 
     fun onToggleFavorite(promo: Promo) {
         viewModelScope.launch {
             try {
-                val updatedPromo = promo.copy(isFavorite = !promo.isFavorite)
-                if (updatedPromo.isFavorite) {
-                    promoRepository.insertPromo(updatedPromo.id, updatedPromo.title, updatedPromo.description, updatedPromo.imageUrl)
-                } else {
-                    promoRepository.deletePromo(updatedPromo.id, updatedPromo.title, updatedPromo.description, updatedPromo.imageUrl)
+                val updatedPromo = promoRepository.toggleFavorite(promo)
+                val updatedPromos = _state.value.promos.map {
+                    if (it.id == updatedPromo.id) updatedPromo else it
                 }
-                updatePromoList(updatedPromo)
+                _state.value = _state.value.copy(promos = updatedPromos)
             } catch (e: Exception) {
-                _state.value = _state.value.copy(error = "Error updating favorite: ${e.localizedMessage}")
+                _state.value = _state.value.copy(
+                    error = "Error updating favorite: ${e.localizedMessage}"
+                )
             }
         }
-    }
-
-    fun searchPromo() {
-        _state.value = _state.value.copy(isLoading = true, error = "")
-        viewModelScope.launch {
-            try {
-                val result = promoRepository.searchPromo(_title.value)
-                _state.value = when (result) {
-                    is Resource.Success -> {
-                        PromoListState(promos = result.data?.sortedByDescending { it.isFavorite } ?: emptyList())
-                    }
-                    is Resource.Error -> {
-                        PromoListState(error = result.message ?: "An unknown error occurred")
-                    }
-                }
-            } catch (e: IOException) {
-                _state.value = PromoListState(error = "Network error: Unable to connect to the server. Please check your internet connection.")
-            } catch (e: Exception) {
-                _state.value = PromoListState(error = "An unexpected error occurred: ${e.localizedMessage}")
-            }
-        }
-    }
-
-    private fun updatePromoList(updatedPromo: Promo) {
-        val updatedPromos = _state.value.promos.map { promo ->
-            if (promo.id == updatedPromo.id) updatedPromo else promo
-        }.sortedByDescending { it.isFavorite }
-
-        _state.value = _state.value.copy(promos = updatedPromos)
     }
 }
+
