@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
     private val loginRepository = LoginRepositoryImpl(loginService)
     private val useCase = SignUpUseCase(loginRepository)
     private val viewModel = SignUpViewModel(useCase)
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -36,4 +36,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
