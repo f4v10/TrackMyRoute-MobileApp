@@ -63,7 +63,7 @@ fun SignUpScreen(viewModel: SignUpViewModel) {
                     }
                 },
                 actions = {
-                    IconButton(onClick = { /* do something */ }) {
+                    IconButton(onClick = {  }) {
                         Icon(
                             imageVector = Icons.Filled.Home,
                             contentDescription = "Localized description"

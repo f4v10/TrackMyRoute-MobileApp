@@ -32,7 +32,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
-import pe.edu.upc.trackmyroute.feature_login.presentation.sign_up.SignUpViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,7 +64,7 @@ fun SignInScreen(viewModel: SignInViewModel) {
                     }
                 },
                 actions = {
-                    IconButton(onClick = { /* do something */ }) {
+                    IconButton(onClick = {  }) {
                         Icon(
                             imageVector = Icons.Filled.Home,
                             contentDescription = "Localized description"
@@ -119,3 +118,4 @@ fun SignInScreen(viewModel: SignInViewModel) {
         }
     }
 }
+
