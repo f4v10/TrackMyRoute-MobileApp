@@ -1,4 +1,5 @@
-package pe.edu.upc.trackmyroute.feature_login.presentation.sign_up
+package pe.edu.upc.trackmyroute.feature_login.presentation.sign_in
+
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -31,10 +32,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
+import pe.edu.upc.trackmyroute.feature_login.presentation.sign_up.SignUpViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SignUpScreen(viewModel: SignUpViewModel) {
+fun SignInScreen(viewModel: SignInViewModel) {
     val username = viewModel.username.value
     val password = viewModel.password.value
     val state = viewModel.state.value
@@ -73,7 +75,7 @@ fun SignUpScreen(viewModel: SignUpViewModel) {
                 scrollBehavior = scrollBehavior,
             )
         },
-        ){ paddingValues ->
+    ){ paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -89,7 +91,7 @@ fun SignUpScreen(viewModel: SignUpViewModel) {
                     alignment = Alignment.Center
                 ),
             )
-            Text(text = "Crear Cuenta", fontSize = 30.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.SansSerif)
+            Text(text = "Iniciar Sesión", fontSize = 30.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.SansSerif)
             OutlinedTextField(value = username,
                 label = { Text("Usuario") },
                 onValueChange = {
@@ -101,15 +103,15 @@ fun SignUpScreen(viewModel: SignUpViewModel) {
                     viewModel.onPasswordChanged(it)
                 })
             OutlinedButton(onClick = {
-                viewModel.signUp()
+                viewModel.signIn()
             }) {
-                Text(text = "Regístrate")
+                Text(text = "Ingresar")
             }
             if (state.isLoading) {
                 CircularProgressIndicator()
             }
             state.user?.let {
-                Text("¡Bienvenid@ ${viewModel.username.value} a Track My Route!", fontSize = 18.sp, fontFamily = FontFamily.SansSerif)
+                Text("¡Bienvenid@ de vuelta ${viewModel.username.value}!", fontSize = 18.sp, fontFamily = FontFamily.SansSerif)
             }
             if (state.error.isNotBlank()) {
                 Text(text = state.error)

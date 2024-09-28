@@ -7,7 +7,10 @@ import androidx.activity.enableEdgeToEdge
 import pe.edu.upc.trackmyroute.common.Constants
 import pe.edu.upc.trackmyroute.feature_login.data.remote.LoginService
 import pe.edu.upc.trackmyroute.feature_login.data.repository.LoginRepositoryImpl
+import pe.edu.upc.trackmyroute.feature_login.domain.use_case.SignInUseCase
 import pe.edu.upc.trackmyroute.feature_login.domain.use_case.SignUpUseCase
+import pe.edu.upc.trackmyroute.feature_login.presentation.sign_in.SignInScreen
+import pe.edu.upc.trackmyroute.feature_login.presentation.sign_in.SignInViewModel
 import pe.edu.upc.trackmyroute.feature_login.presentation.sign_up.SignUpScreen
 import pe.edu.upc.trackmyroute.feature_login.presentation.sign_up.SignUpViewModel
 import pe.edu.upc.trackmyroute.ui.theme.TrackMyRouteMobileAppTheme
@@ -22,16 +25,21 @@ class MainActivity : ComponentActivity() {
         .build()
         .create(LoginService::class.java)
 
-    private val loginRepository = LoginRepositoryImpl(loginService)
-    private val useCase = SignUpUseCase(loginRepository)
-    private val viewModel = SignUpViewModel(useCase)
+    private val loginRepositorySignUp = LoginRepositoryImpl(loginService)
+    private val useCaseSignUp = SignUpUseCase(loginRepositorySignUp)
+    private val viewModelSignUp = SignUpViewModel(useCaseSignUp)
+
+    private val loginRepositorySignIn = LoginRepositoryImpl(loginService)
+    private val useCaseSignIn = SignInUseCase(loginRepositorySignIn)
+    private val viewModelSignIn = SignInViewModel(useCaseSignIn)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             TrackMyRouteMobileAppTheme {
-                SignUpScreen(viewModel)
+                SignInScreen(viewModelSignIn)
+                //SignUpScreen(viewModelSignUp)
             }
         }
     }

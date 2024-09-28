@@ -21,7 +21,6 @@ class LoginRepositoryImpl (
             }
 
             override fun onFailure(call: Call<UserDto>, response: Throwable) {
-                TODO("Not yet implemented")
             }
         })
     }
@@ -35,7 +34,6 @@ class LoginRepositoryImpl (
             }
 
             override fun onFailure(call: Call<UserDto>, response: Throwable) {
-                TODO("Not yet implemented")
             }
         })
     }
